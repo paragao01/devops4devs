@@ -8,6 +8,15 @@ jobs:
     CI:
         runs-on: ubuntu-latest
         steps: 
+          - name: Obtendo código
+            uses: actions/checkout@v4
+            
+          - name: Construção e envio da imagem docker
+            uses: docker/build-push-action@v6
+            with:
+                  context: "{{defaultContext}}:mysubdir"
+                  push: true
+                  tags: user/app:latest 
           - name: Passo 01 
             run: echo "Execução do Build da Imagem" 
           - name: Passo 02 
