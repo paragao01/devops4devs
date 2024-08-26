@@ -17,4 +17,4 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Passo 01
-            -  run:  echo "Execução do Deploy"
+            -  run: echo "Execução do Deploy"
