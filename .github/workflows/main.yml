@@ -22,26 +22,27 @@ jobs:
             with:
               context: src
               file: src/Review-Filmes.Web/Dockerfile
-              ###push: true
+              push: true
               tags: |
                 oagara/devops4dev-review:v${{ github.run_number }}
                 oagara/devops4dev-review:latest
   
     CD:
-        runs-on: ubuntu-latest 
+        runs-on: ubuntu-latest
         needs: [CI]
-        steps: 
-            - name: Atualizar a Imagem mo Manifesto k8s 
-              run: |
-                sed -i 's|image: oagara/devops4dev-review.*|image: oagara/devops4dev-review:v${{ github.run_number }}'
+        steps:
+          - name: Obtendo código
+            uses: actions/checkout@v4
 
-            - name: Commit e Push das Auterações
-              working-directory: src/Review-Filmes.Web
-              run: |
-                git config --global user.email "paragao01@gmail.com"
-                git config --global user.name "GitHub Action - argocd"
-                git remote set-url origin https://x-access-token:${{secrets.GITHUB_TOKEN}}
-                git add k8s/deployment.yaml
-                git commit -m "Atualizando imagem para oagara/devops4dev-review:v${{ github.run_number }}"
-                git push origin main
+          - name: Atualizar a Imagem no Manifesto k8s
+            run: |
+              sed -i 's|image: oagara/devops4dev-review.*|image: oagara/devops4dev-review:v${{ github.run_number }}|' k8s/deployment.yaml
+
+          - name: Commit e Push das Alterações
+            run: |
+              git config user.name "GitHub Actions"
+              git config user.email "actions@github.com"
+              git add k8s/deployment.yaml
+              git commit -m "Atualizando imagem para oagara/devops4dev-review:v${{ github.run_number }}"
+              git push
 
