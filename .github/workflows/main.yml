@@ -33,7 +33,7 @@ jobs:
         steps: 
             - name: Atualizar a Imagem mo Manifesto k8s 
               run: |
-                sed -i 's|image: oagara/devops4dev-review.*|image: oagara/devops4dev-review:v${{ github.run_number }}|'
+                sed -i 's|image: oagara/devops4dev-review.*|image: oagara/devops4dev-review:v${{ github.run_number }}'
 
             - name: Commit e Push das Auterações
               working-directory: src/Review-Filmes.Web
