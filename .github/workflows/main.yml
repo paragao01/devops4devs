@@ -10,22 +10,38 @@ jobs:
         steps: 
           - name: Obtendo código
             uses: actions/checkout@v4
-            
-          - name: Construção e envio da imagem docker
-            uses: docker/build-push-action@v6
+
+          - name: Login to Docker Hub
+            uses: docker/login-action@v3
             with:
-                  context: "{{defaultContext}}:mysubdir"
-                  push: true
-                  tags: user/app:latest 
-          - name: Passo 01 
-            run: echo "Execução do Build da Imagem" 
-          - name: Passo 02 
-            run: echo "Execução do push da Imagem"
+              username: ${{ secrets.DOCKERHUB_USERNAME }}
+              password: ${{ secrets.DOCKERHUB_TOKEN }}
+                
+          - name: Construção e envio da imagem docker
+            uses: docker/build-push-action@v5
+            with:
+              context: src
+              file: src/Review-Filmes.Web/Dockerfile
+              ###push: true
+              tags: |
+                oagara/devops4dev-review:v${{ github.run_number }}
+                oagara/devops4dev-review:latest
+  
     CD:
         runs-on: ubuntu-latest 
         needs: [CI]
         steps: 
-            - name: Passo 01 
-              run: echo "Execução do Deploy"
+            - name: Atualizar a Imagem mo Manifesto k8s 
+              run: |
+                sed -i 's|image: oagara/devops4dev-review.*|image: oagara/devops4dev-review:v${{ github.run_number }}|'
 
+            - name: Commit e Push das Auterações
+              working-directory: src/Review-Filmes.Web
+              run: |
+                git config --global user.email "paragao01@gmail.com"
+                git config --global user.name "GitHub Action - argocd"
+                git remote set-url origin https://x-access-token:${{secrets.GITHUB_TOKEN}}
+                git add k8s/deployment.yaml
+                git commit -m "Atualizando imagem para oagara/devops4dev-review:v${{ github.run_number }}"
+                git push origin main
 
