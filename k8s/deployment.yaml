@@ -55,7 +55,7 @@ spec:
     spec:
       containers:
         - name: reviewvideo
-          image: oagara/devops4dev-review:v13
+          image: oagara/devops4dev-review:v14
           ports:
             - containerPort: 8080
           env:
